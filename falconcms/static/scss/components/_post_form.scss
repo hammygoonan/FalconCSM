@@ -1,0 +1,21 @@
+input#title{
+    border: none;
+    box-shadow: none;
+    font-size: $h2-font-size;
+    height: $h2-font-size * 1.3;
+    padding: 0;
+    &:focus{
+        background-color: transparent;
+    }
+}
+textarea#content{
+    height: 60vh;
+    border: 1px solid $input-focus-bg-color;
+    box-shadow: none;
+}
+#preview{
+    height: 60vh;
+    background-color: $input-focus-bg-color;
+    overflow-x: auto;
+    padding: $column-gutter / 2;
+}

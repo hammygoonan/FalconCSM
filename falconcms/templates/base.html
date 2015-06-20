@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FalconCMS</title>
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
   </head>
   <body>
@@ -13,24 +13,28 @@
         <h1>Create New Post</h1>
       </div>
     </div>
-	<form>
-	    <div class="row">
-        	<div class="large-12 columns">
-				<input type="text" name="title" placeholder="Post Title" />
-			</div>
-		</div>
-		<div class="row">
-			<div class="large-6 columns text">
-				<textarea name="content" placeholder="Enter your content here..."></textarea>
-			<div>
-			<div class="large-6 columns preview">
-			</div>
-		</div>
-		<div class="row">
-        	<div class="large-12 columns">
-				<input type="submit" name="title" placeholder="Post Title" />
-			</div>
-		</div>
-	</form>
+    <form>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="text" id="title" name="title" placeholder="Post Title" />
+            </div>
+        </div>
+        <div class="row collapse">
+            <div class="large-6 columns">
+                <textarea name="content" id="content" placeholder="Enter your content here..."></textarea>
+            </div>
+            <div class="large-6 columns" id="preview">
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <button type="submit" name="title" class="button expand radius">Submit</button>
+            </div>
+        </div>
+    </form>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/Markdown.Converter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </body>
 </html>
