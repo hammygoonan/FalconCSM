@@ -5,6 +5,7 @@ falconcms/static/css/app.css
 # app
 config.py
 coverage
+*.sql
 
 # OS specific
 .DS_Store

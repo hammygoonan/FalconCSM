@@ -7,5 +7,11 @@
         {% for message in get_flashed_messages() %}
             <p class="has-error">{{ message }}</p>
         {% endfor %}
+        {% for post in posts %}
+            <article>
+                <h1>{{ post.title }}</h1>
+                {{ post.content | markdown | safe }}
+            </article>
+        {% endfor %}
     </div>
 {% endblock %}

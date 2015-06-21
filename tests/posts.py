@@ -10,11 +10,14 @@ class PostsTestCase(BaseTestCase):
 
     """Post page test."""
 
-    # def test_post_edit_page(self):
-    #     """Test post edit page to ensure it displays correctly."""
-    #     response = self.client.get(
-    #         '/', content_type='html/text',
-    #         follow_redirects=True
-    #     )
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn(b'Create New Post', response.data)
+    def test_home_page(self):
+        """Test home page to make sure it displays a list of posts."""
+        response = self.client.get(
+            '/', content_type='html/text',
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'<h2>First Post Header</h2>', response.data)
+        self.assertIn(b'<li>first item</li>', response.data)
+        self.assertIn(b'<a href="http://httpbin.com">a link</a>',
+                      response.data)

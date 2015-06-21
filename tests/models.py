@@ -5,7 +5,6 @@
 
 from tests.base import BaseTestCase
 from falconcms import models, db
-from datetime import datetime
 
 
 class ModelTestCase(BaseTestCase):
