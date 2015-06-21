@@ -5,6 +5,8 @@
 
 from flask.ext.testing import TestCase
 from falconcms import app, db
+from falconcms.models import User, Post, Role, Taxonomy
+from datetime import datetime
 
 
 class BaseTestCase(TestCase):
@@ -18,7 +20,26 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         """Setup tests."""
-        pass
+        db.create_all()
+        user = User('test@example.com', 'password',
+                    'John Henry', 'big_j')
+        other_user = User('other@example.com', 'other password',
+                          'Major Luddite', 'luddites')
+        post = Post('New Post', 'post content', datetime.now(),
+                    datetime.now(), 1, 1, user)
+        tag = Taxonomy('New Tag', 2)
+        category = Taxonomy('New Category', 1)
+        db.session.add_all([
+            Role('Administrator'),
+            Role('Editor'),
+            Role('Author'),
+            user,
+            post,
+            tag,
+            category,
+            other_user
+        ])
+        db.session.commit()
 
     def tearDown(self):
         """Tear down tests."""

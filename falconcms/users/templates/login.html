@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+	<div class="large-12 columns">
+		<h1>Login</h1>
+		{% for message in get_flashed_messages() %}
+			<p class="has-error">{{ message }}</p>
+		{% endfor %}
+	</div>
+<div>
+<form id="login-form" method="post" action="{{ url_for('users.login') }}">
+	<div class="row">
+	    <div class="large-12 columns">
+			<label for="email">Email:</label>
+			<input class="form-control" id="email" name="email" type="text" placeholder="Your Email Address" />
+			<label for="password">Password:</label>
+			<input class="form-control" id="password" name="password" type="password" placeholder="Password" />
+		</div>
+	</div>
+	<div class="row">
+	    <div class="large-12 columns">
+			<button class="button" type="submit">Submit</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

@@ -12,26 +12,6 @@ class ModelTestCase(BaseTestCase):
 
     """Model page test."""
 
-    def setUp(self):
-        """Setup tests."""
-        db.create_all()
-        user = models.User('test@example.com', 'password',
-                           'John Henry', 'big_j')
-        post = models.Post('New Post', 'post content', datetime.now(),
-                           datetime.now(), 1, 1, user)
-        tag = models.Taxonomy('New Tag', 2)
-        category = models.Taxonomy('New Category', 1)
-        db.session.add_all([
-            models.Role('Administrator'),
-            models.Role('Editor'),
-            models.Role('Author'),
-            user,
-            post,
-            tag,
-            category
-        ])
-        db.session.commit()
-
     def test_can_create_user_roles(self):
         """Test it is possible to create a role."""
         roles = models.Role.query.all()

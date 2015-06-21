@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Create New Post</h1>
+      </div>
+    </div>
+    <form>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="text" id="title" name="title" placeholder="Post Title" />
+            </div>
+        </div>
+        <div class="row collapse">
+            <div class="large-6 columns">
+                <textarea name="content" id="content" placeholder="Enter your content here..."></textarea>
+            </div>
+            <div class="large-6 columns" id="preview">
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <button type="submit" name="title" class="button expand radius">Submit</button>
+            </div>
+        </div>
+    </form>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/Markdown.Converter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}
