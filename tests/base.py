@@ -4,7 +4,7 @@
 
 
 from flask.ext.testing import TestCase
-from falconcms import app
+from falconcms import app, db
 
 
 class BaseTestCase(TestCase):
@@ -13,6 +13,7 @@ class BaseTestCase(TestCase):
 
     def create_app(self):
         """Create app for tests."""
+        app.config.from_object('config.TestConfig')
         return app
 
     def setUp(self):
@@ -21,4 +22,5 @@ class BaseTestCase(TestCase):
 
     def tearDown(self):
         """Tear down tests."""
-        pass
+        db.session.remove()
+        db.drop_all()

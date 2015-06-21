@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Testing post pages."""
 
 
 from tests.base import BaseTestCase
@@ -7,9 +8,10 @@ from tests.base import BaseTestCase
 
 class PostsTestCase(BaseTestCase):
 
-    """Post page test. """
+    """Post page test."""
 
     def test_post_edit_page(self):
+        """Test post edit page to ensure it displays correctly."""
         response = self.client.get(
             '/', content_type='html/text',
             follow_redirects=True

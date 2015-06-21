@@ -1,7 +1,13 @@
 # SCSS
 falconcms/static/css/app.css
 .sass-cache
+
+# app
 config.py
+coverage
+
+# OS specific
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -52,8 +58,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
 
 # Sphinx documentation
 docs/_build/
