@@ -41,15 +41,19 @@ class PostsTestCase(BaseTestCase):
     def test_post_list_page(self):
         """Test page displays a list of posts."""
         with self.client:
-            self.login()
-            response = self.client.get(
-                '/posts/list', content_type='html/text',
-                follow_redirects=True
-            )
+            response = self.login()
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'<td>New Post</td>', response.data)
-            # TODO check it's only posts from logged in user
-            # TODO check what happend is no posts
+        with self.client:
+            response = self.other_login()
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'<td>The Other Second Post</td>', response.data)
+            self.assertNotIn(b'<td>New Post</td>', response.data)
+        with self.client:
+            response = self.no_post_login()
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'You don\'t seem to have any posts.', response.data)
+            self.assertNotIn(b'<td>New Post</td>', response.data)
 
     def test_post_add_page(self):
         pass

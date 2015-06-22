@@ -37,3 +37,25 @@ class BaseTestCase(TestCase):
                 'password': 'password'
             },
         )
+
+    def other_login(self):
+        """Login to site."""
+        return self.client.post(
+            url_for('users.login'),
+            follow_redirects=True,
+            data={
+                'email': 'other@example.com',
+                'password': 'other password'
+            },
+        )
+
+    def no_post_login(self):
+        """Login to site."""
+        return self.client.post(
+            url_for('users.login'),
+            follow_redirects=True,
+            data={
+                'email': 'nopost@magoo.com',
+                'password': 'magoo password'
+            },
+        )
