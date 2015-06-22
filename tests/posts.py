@@ -22,18 +22,48 @@ class PostsTestCase(BaseTestCase):
         self.assertIn(b'<a href="http://httpbin.com">a link</a>',
                       response.data)
 
-    def test_post_edit_page(self):
-        self.login()
-        response = self.client.get(
-            '/posts/edit/1', content_type='html/text',
-            follow_redirects=True
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'New Post', response.data)
-        # TODO check can only edit post if has permissions
+    def test_post_edit_page_with_author(self):
+        """Test Author functionality when editing posts."""
+        with self.client:
+            self.login()
+            response = self.client.get(
+                '/posts/edit/1', content_type='html/text',
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'New Post', response.data)
+        with self.client:
+            self.other_login()
+            response = self.client.get(
+                '/posts/edit/1', content_type='html/text',
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 404)
+        with self.client:
+            self.login()
+            response = self.client.get(
+                '/posts/edit/999999', content_type='html/text',
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 404)
+        with self.client:
+            self.login()
+            self.client.post(
+                '/posts/edit/1', content_type='html/text',
+                follow_redirects=True,
+                data={
+                    'title': 'New Post',
+                    'content': 'New content'
+                }
+            )
+            post = Post.query.get(1)
+            self.assertNotEqual(post.create, post.modified)
+            self.assertEqual('New content', post.content)
+
+    def test_post_edit_page_with_editor(self):
+        """Test Editor functionality when editing posts."""
         # TODO check editor can edit
-        # TODO check what happend if it is a wrong ID
-        # TODO check contents is updated.
+        pass
 
     def test_post_updated(self):
         pass

@@ -25,7 +25,8 @@ def post_edit(post_id):
     """Edit post."""
     if request.method == "POST":
         pass
-    post = Post.query.get(post_id)
+    post = Post.query.filter_by(id=post_id, author_id=current_user.id)\
+        .first_or_404()
     return render_template('edit_post.html', post=post)
 
 
