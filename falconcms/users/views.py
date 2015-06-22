@@ -24,9 +24,8 @@ def login():
             user.password, request.form['password']
         ):
             login_user(user)
-            # TODO: proper redirect to admin panel
             flash("You are now logged in.")
-            return redirect('/')
+            return redirect(url_for('posts.post_list'))
 
         else:
             flash('Invalid username or password.')
@@ -39,8 +38,6 @@ def login():
 def logout():
     """Logout route."""
     logout_user()
-    flash('You were logged out')
-    # TODO: add proper logout redirect
     flash('You were logged out')
     return redirect('/')
 

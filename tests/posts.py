@@ -37,6 +37,7 @@ class PostsTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'First Post Header', response.data)
         # TODO check it's only posts from logged in user
+        # TODO check what happend is no posts
 
     def test_post_add_page(self):
         pass

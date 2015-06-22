@@ -15,7 +15,7 @@ posts_blueprint = Blueprint(
 @posts_blueprint.route('/')
 def home():
     """Home page, a list of posts."""
-    posts = Post.query.all().limit(10)
+    posts = Post.query.limit(10).all()
     return render_template('index.html', posts=posts)
 
 
@@ -28,10 +28,10 @@ def post_edit(id):
 
 @posts_blueprint.route('/posts/list')
 @login_required
-def post_list(id):
+def post_list():
     """List of posts for users."""
     posts = Post.query.filter_by(author_id=current_user.id).all()
-    return render_template('index.html', posts=posts)
+    return render_template('list.html', posts=posts)
 
 
 @posts_blueprint.route('/posts/add', methods=['GET', 'POST'])

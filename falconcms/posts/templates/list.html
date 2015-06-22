@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="large-12 columns">
+        <h1>Posts</h1>
+        {% for message in get_flashed_messages() %}
+            <p class="has-error">{{ message }}</p>
+        {% endfor %}
+        <a href="{{ url_for('posts.post_add') }}" class="button">New Post</a>
+        {% if posts %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Post Title</th>
+                        <th>Author</th>
+                        <th>Date created</th>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>{{ post.title }}</td>
+                            <td>{{ post.author.name }}</td>
+                            <td>{{ post.created.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="/posts/edit/{{ post.id }}">edit</a> |
+                                <a href="/posts/delete/{{ post.id }}">delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You don't seem to have any posts. Better get cracking!</p>
+        {% endif %}
+    </div>
+{% endblock %}
