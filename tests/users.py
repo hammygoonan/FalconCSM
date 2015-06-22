@@ -174,14 +174,3 @@ class UsersTestCase(BaseTestCase):
             # display flash message
             self.assertIn(b'Please enter a valid email address.',
                           response.data)
-
-    def login(self):
-        """Login to site."""
-        return self.client.post(
-            url_for('users.login'),
-            follow_redirects=True,
-            data={
-                'email': 'test@example.com',
-                'password': 'password'
-            },
-        )

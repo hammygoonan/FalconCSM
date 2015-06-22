@@ -4,18 +4,18 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <h1>Create New Post</h1>
+        <h1>Edit Post</h1>
       </div>
     </div>
     <form>
         <div class="row">
             <div class="large-12 columns">
-                <input type="text" id="title" name="title" placeholder="Post Title" />
+                <input type="text" id="title" name="title" value="{{ post.title }}" placeholder="Post Title" />
             </div>
         </div>
         <div class="row collapse">
             <div class="large-6 columns">
-                <textarea name="content" id="content" placeholder="Enter your content here..."></textarea>
+                <textarea name="content" id="content" placeholder="Enter your content here...">{{ post.content }}</textarea>
             </div>
             <div class="large-6 columns" id="preview">
             </div>

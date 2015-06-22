@@ -5,7 +5,7 @@
 {% for message in get_flashed_messages() %}
     <p class="has-error">{{ message }}</p>
 {% endfor %}
-<form id="login-form" method="post" action="{{ url_for('users.edit') }}">
+<form id="login-form" method="post" action="{{ url_for('users.edit_user') }}">
     <div class="form-group">
         <label for="email">Email:</label>
         <input class="form-control" id="email" name="email" value="{{ user.email }}" type="text" placeholder="Your Email Address" />

@@ -4,6 +4,7 @@
 
 
 from flask.ext.testing import TestCase
+from flask import url_for
 from falconcms import app, db
 from create_db import create_db
 
@@ -25,3 +26,14 @@ class BaseTestCase(TestCase):
         """Tear down tests."""
         db.session.remove()
         db.drop_all()
+
+    def login(self):
+        """Login to site."""
+        return self.client.post(
+            url_for('users.login'),
+            follow_redirects=True,
+            data={
+                'email': 'test@example.com',
+                'password': 'password'
+            },
+        )

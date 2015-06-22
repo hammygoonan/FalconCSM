@@ -44,13 +44,13 @@ def logout():
 
 @users_blueprint.route('/users/edit', methods=['GET', 'POST'])
 @login_required
-def edit():
+def edit_user():
     """Edit user route."""
     if request.method == "POST":
         email = request.form.get('email')
         if not email or not is_email(email):
             flash('Please enter a valid email address.')
-            return render_template('edit.html', user=current_user)
+            return render_template('edit_user.html', user=current_user)
         user = User.query.filter_by(email=email).first()
         # if email is already taken
         if user and user.id != current_user.id:
@@ -67,4 +67,4 @@ def edit():
                 user.email = request.form['email']
             db.session.commit()
             flash('Your details have been updated')
-    return render_template('edit.html', user=current_user)
+    return render_template('edit_user.html', user=current_user)

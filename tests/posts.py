@@ -23,21 +23,33 @@ class PostsTestCase(BaseTestCase):
                       response.data)
 
     def test_post_edit_page(self):
-        pass
+        self.login()
+        response = self.client.get(
+            '/posts/edit/1', content_type='html/text',
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'New Post', response.data)
+        # TODO check can only edit post if has permissions
+        # TODO check editor can edit
+        # TODO check what happend if it is a wrong ID
+        # TODO check contents is updated.
 
     def test_post_updated(self):
         pass
 
     def test_post_list_page(self):
         """Test page displays a list of posts."""
-        response = self.client.get(
-            '/posts/list', content_type='html/text',
-            follow_redirects=True
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'First Post Header', response.data)
-        # TODO check it's only posts from logged in user
-        # TODO check what happend is no posts
+        with self.client:
+            self.login()
+            response = self.client.get(
+                '/posts/list', content_type='html/text',
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'<td>New Post</td>', response.data)
+            # TODO check it's only posts from logged in user
+            # TODO check what happend is no posts
 
     def test_post_add_page(self):
         pass
