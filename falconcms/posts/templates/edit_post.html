@@ -7,7 +7,7 @@
         <h1>Edit Post</h1>
       </div>
     </div>
-    <form>
+    <form method="post" action="{{ url_for('posts.post_update') }}">
         <div class="row">
             <div class="large-12 columns">
                 <input type="text" id="title" name="title" value="{{ post.title }}" placeholder="Post Title" />
@@ -25,6 +25,8 @@
                 <button type="submit" name="title" class="button expand radius">Submit</button>
             </div>
         </div>
+        <input type="hidden" name="id" value="{{ post.id }}" />
+        <input type="hidden" name="editor" value="{{ current_user.id }}" />
     </form>
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>

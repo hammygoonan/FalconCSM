@@ -4,6 +4,7 @@
 
 
 from tests.base import BaseTestCase
+from falconcms.models import Post
 
 
 class PostsTestCase(BaseTestCase):
@@ -52,12 +53,15 @@ class PostsTestCase(BaseTestCase):
                 '/posts/edit/1', content_type='html/text',
                 follow_redirects=True,
                 data={
+                    'id': 1,
                     'title': 'New Post',
                     'content': 'New content'
                 }
             )
             post = Post.query.get(1)
-            self.assertNotEqual(post.create, post.modified)
+            # dates should have switched. Assume more than a microsecond has
+            # passed
+            self.assertNotEqual(post.created, post.modified)
             self.assertEqual('New content', post.content)
 
     def test_post_edit_page_with_editor(self):

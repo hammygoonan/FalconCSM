@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """posts/views.py: Post views."""
 
-from flask import render_template, Blueprint, request
+from flask import render_template, Blueprint, request, redirect
 from falconcms.models import Post
 from flask.ext.login import login_required, current_user
 
@@ -19,15 +19,20 @@ def home():
     return render_template('index.html', posts=posts)
 
 
-@posts_blueprint.route('/posts/edit/<int:post_id>', methods=['GET', 'POST'])
+@posts_blueprint.route('/posts/edit/<int:post_id>', methods=['GET'])
 @login_required
-def post_edit(post_id):
+def post_edit(post_id=None):
     """Edit post."""
-    if request.method == "POST":
-        pass
     post = Post.query.filter_by(id=post_id, author_id=current_user.id)\
         .first_or_404()
     return render_template('edit_post.html', post=post)
+
+
+@posts_blueprint.route('/posts/edit', methods=['POST'])
+def post_update():
+    """Update post."""
+    print(request)
+    return redirect('posts/edit/' + request.form['id'])
 
 
 @posts_blueprint.route('/posts/list')
