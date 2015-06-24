@@ -50,15 +50,17 @@ class PostsTestCase(BaseTestCase):
         with self.client:
             self.login()
             self.client.post(
-                '/posts/edit/1', content_type='html/text',
-                follow_redirects=True,
+                '/posts/edit',
+                # follow_redirects=True,
                 data={
-                    'id': 1,
+                    'post_id': 1,
+                    'user_id': 1,
                     'title': 'New Post',
                     'content': 'New content'
                 }
             )
             post = Post.query.get(1)
+            # self.assertEqual(response.status_code, 200)
             # dates should have switched. Assume more than a microsecond has
             # passed
             self.assertNotEqual(post.created, post.modified)

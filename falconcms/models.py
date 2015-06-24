@@ -71,7 +71,7 @@ class User(db.Model):
     name = db.Column(db.String)
     handle = db.Column(db.String)
 
-    role = db.relationship(
+    roles = db.relationship(
         'Role', secondary=role,
         backref=db.backref('users', lazy='dynamic'))
 

@@ -22,11 +22,11 @@
         </div>
         <div class="row">
             <div class="large-12 columns">
-                <button type="submit" name="title" class="button expand radius">Submit</button>
+                <button type="submit" name="submit" class="button expand radius">Submit</button>
             </div>
         </div>
-        <input type="hidden" name="id" value="{{ post.id }}" />
-        <input type="hidden" name="editor" value="{{ current_user.id }}" />
+        <input type="hidden" name="post_id" value="{{ post.id }}" />
+        <input type="hidden" name="user_id" value="{{ current_user.id }}" />
     </form>
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>

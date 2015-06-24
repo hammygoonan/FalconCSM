@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """posts/views.py: Post views."""
 
-from flask import render_template, Blueprint, request, redirect
+from flask import render_template, Blueprint, request, redirect, abort
+from falconcms import db
 from falconcms.models import Post
 from flask.ext.login import login_required, current_user
 
@@ -22,7 +23,7 @@ def home():
 @posts_blueprint.route('/posts/edit/<int:post_id>', methods=['GET'])
 @login_required
 def post_edit(post_id=None):
-    """Edit post."""
+    """Display post edit form."""
     post = Post.query.filter_by(id=post_id, author_id=current_user.id)\
         .first_or_404()
     return render_template('edit_post.html', post=post)
@@ -31,8 +32,30 @@ def post_edit(post_id=None):
 @posts_blueprint.route('/posts/edit', methods=['POST'])
 def post_update():
     """Update post."""
-    print(request)
-    return redirect('posts/edit/' + request.form['id'])
+    # need to be logged in to edit. XSS protection
+    user_id = request.form.get('user_id')
+    post_id = request.form.get('post_id')
+    if not user_id or not post_id:
+        abort(404)
+    # bit of an XSS test.
+    if current_user.id != int(user_id):
+        abort(404)
+    post = Post.query.get(post_id)
+    if not post:
+        abort(404)
+    # if current user isn't author, check they are an editor
+    if post.author_id != current_user.id:
+        editor = False
+        for role in current_user.roles:
+            if role.role == 'Editor':
+                editor = True
+        if not editor:
+            abort(404)
+    post.title = request.form.get('title')
+    post.content = request.form.get('content')
+    db.session.add(post)
+    db.session.commit()
+    return redirect('/posts/edit/' + post_id)
 
 
 @posts_blueprint.route('/posts/list')
