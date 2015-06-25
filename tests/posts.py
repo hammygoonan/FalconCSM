@@ -23,8 +23,17 @@ class PostsTestCase(BaseTestCase):
         self.assertIn(b'<a href="http://httpbin.com">a link</a>',
                       response.data)
 
-    def test_post_edit_page_with_author(self):
-        """Test Author functionality when editing posts."""
+    def test_redirect_to_login_in_not_logged_in_on_post_edit_page(self):
+        """Check that users are redirect to login page if not logged in."""
+        with self.client:
+            response = self.client.get(
+                '/posts/edit/1', content_type='html/text',
+                follow_redirects=True
+            )
+            self.assertIn(b'Please login to view that page.', response.data)
+
+    def test_200_response_if_logged_in_and_correct_user(self):
+        """Check page accessable by logged in user and author/editor."""
         with self.client:
             self.login()
             response = self.client.get(
@@ -33,6 +42,9 @@ class PostsTestCase(BaseTestCase):
             )
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'New Post', response.data)
+
+    def test_400_response_if_logged_in_and_incorrect_user(self):
+        """Test user without permission can't edit page."""
         with self.client:
             self.other_login()
             response = self.client.get(
@@ -40,6 +52,9 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 404)
+
+    def text_400_if_post_doesnt_exist(self):
+        """Test that a 404 is thrown if no post with that id."""
         with self.client:
             self.login()
             response = self.client.get(
@@ -47,11 +62,14 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 404)
+
+    def test_post_can_be_updated(self):
+        """Test post is updated when edited by valid user."""
         with self.client:
             self.login()
-            self.client.post(
+            response = self.client.post(
                 '/posts/edit',
-                # follow_redirects=True,
+                follow_redirects=True,
                 data={
                     'post_id': 1,
                     'user_id': 1,
@@ -60,8 +78,8 @@ class PostsTestCase(BaseTestCase):
                 }
             )
             post = Post.query.get(1)
-            # self.assertEqual(response.status_code, 200)
-            # dates should have switched. Assume more than a microsecond has
+            self.assertEqual(response.status_code, 200)
+            # dates should have changed. Assume more than a microsecond has
             # passed
             self.assertNotEqual(post.created, post.modified)
             self.assertEqual('New content', post.content)
@@ -92,6 +110,7 @@ class PostsTestCase(BaseTestCase):
             self.assertNotIn(b'<td>New Post</td>', response.data)
 
     def test_post_add_page(self):
+        # Test that creator is either author or editor
         pass
 
     def test_post_delete(self):

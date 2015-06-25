@@ -30,6 +30,7 @@ def post_edit(post_id=None):
 
 
 @posts_blueprint.route('/posts/edit', methods=['POST'])
+@login_required
 def post_update():
     """Update post."""
     # need to be logged in to edit. XSS protection
