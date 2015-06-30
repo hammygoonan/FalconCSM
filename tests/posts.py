@@ -68,7 +68,7 @@ class PostsTestCase(BaseTestCase):
         with self.client:
             self.login()
             response = self.client.post(
-                '/posts/edit',
+                '/posts/save',
                 follow_redirects=True,
                 data={
                     'post_id': 1,
@@ -90,7 +90,7 @@ class PostsTestCase(BaseTestCase):
         with self.client:
             self.editor_login()
             response = self.client.post(
-                '/posts/edit',
+                '/posts/save',
                 follow_redirects=True,
                 data={
                     'post_id': 1,
@@ -107,6 +107,13 @@ class PostsTestCase(BaseTestCase):
             self.assertIn(b'Post updated.', response.data)
             self.assertEqual('New content', post.title)
             self.assertEqual('An editor edited my content', post.content)
+
+    def test_editor_gets_full_list(self):
+        """Test list page displays full list of posts for editors."""
+        response = self.editor_login()
+        self.assertIn(b'<td>New Post</td>', response.data)
+        self.assertIn(b'<td>The Second Post</td>', response.data)
+        self.assertIn(b'<td>The Other Second Post</td>', response.data)
 
     def test_post_list_page(self):
         """Test page displays a list of posts."""
@@ -127,9 +134,40 @@ class PostsTestCase(BaseTestCase):
 
     def test_post_add_page(self):
         """Test new post can be created."""
-        # Test that creator is either author or editor
-        pass
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/save',
+                follow_redirects=True,
+                data={
+                    'user_id': 2,
+                    'title': 'Added title',
+                    'content': 'This is the content of an added post'
+                }
+            )
+        self.assertEqual(response.status_code, 200)
+        posts = Post.query.all()
+        self.assertEqual('Added title', posts[-1].title)
+        self.assertEqual('This is the content of an added post',
+                         posts[-1].content)
+        self.assertEqual(posts[-1].created, posts[-1].modified)
+
+    def test_cant_create_post_for_another_user(self):
+        """Test that a 404 is thrown is wrong user tries to create post."""
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/edit',
+                follow_redirects=True,
+                data={
+                    'user_id': 1,
+                    'title': 'New content',
+                    'content': 'An editor edited my content'
+                }
+            )
+            self.assertEqual(response.status_code, 404)
 
     def test_post_delete(self):
         """Test post can be deleted."""
+        self.login()
         pass
