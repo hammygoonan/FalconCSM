@@ -98,6 +98,13 @@ class User(db.Model):
         """Make sure id returned is unicode."""
         return self.id
 
+    def is_editor(self):
+        """Return True is assigned editor role. False otherwise."""
+        for role in self.roles:
+            if role.role == 'Editor':
+                return True
+        return False
+
 
 class Role(db.Model):
 

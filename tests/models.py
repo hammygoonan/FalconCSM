@@ -18,7 +18,7 @@ class ModelTestCase(BaseTestCase):
 
     def test_can_create_users(self):
         """Test user has been created."""
-        user = models.User.query.get(1)
+        user = models.User.query.get(2)
         self.assertEqual('test@example.com', user.email)
         self.assertEqual('John Henry', user.name)
         self.assertEqual('big_j', user.handle)
@@ -32,11 +32,11 @@ class ModelTestCase(BaseTestCase):
     def test_can_assign_role(self):
         """Test a user can be assigned a role."""
         role = models.Role.query.get(1)
-        user = models.User.query.get(1)
+        user = models.User.query.get(2)
         user.roles.append(role)
         db.session.add(user)
         db.session.commit()
-        user = models.User.query.get(1)
+        user = models.User.query.get(2)
         self.assertEqual(1, user.roles[0].id)
 
     def test_can_create_posts(self):

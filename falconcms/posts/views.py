@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """posts/views.py: Post views."""
 
-from flask import render_template, Blueprint, request, redirect, abort
+from flask import render_template, Blueprint, request, redirect, abort, flash
 from falconcms import db
 from falconcms.models import Post
 from flask.ext.login import login_required, current_user
@@ -24,8 +24,9 @@ def home():
 @login_required
 def post_edit(post_id=None):
     """Display post edit form."""
-    post = Post.query.filter_by(id=post_id, author_id=current_user.id)\
-        .first_or_404()
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if post.author_id != current_user.id and not current_user.is_editor():
+        abort(404)
     return render_template('edit_post.html', post=post)
 
 
@@ -45,17 +46,13 @@ def post_update():
     if not post:
         abort(404)
     # if current user isn't author, check they are an editor
-    if post.author_id != current_user.id:
-        editor = False
-        for role in current_user.roles:
-            if role.role == 'Editor':
-                editor = True
-        if not editor:
-            abort(404)
+    if post.author_id != current_user.id and not current_user.is_editor():
+        abort(404)
     post.title = request.form.get('title')
     post.content = request.form.get('content')
     db.session.add(post)
     db.session.commit()
+    flash('Post updated.')
     return redirect('/posts/edit/' + post_id)
 
 

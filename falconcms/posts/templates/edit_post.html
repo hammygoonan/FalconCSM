@@ -7,6 +7,13 @@
         <h1>Edit Post</h1>
       </div>
     </div>
+    {% for message in get_flashed_messages() %}
+        <div class="row">
+            <div class="large-12 columns">
+                <p class="has-error">{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
     <form method="post" action="{{ url_for('posts.post_update') }}">
         <div class="row">
             <div class="large-12 columns">

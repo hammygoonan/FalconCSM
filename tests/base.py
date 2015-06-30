@@ -59,3 +59,14 @@ class BaseTestCase(TestCase):
                 'password': 'magoo password'
             },
         )
+
+    def editor_login(self):
+        """Login to site as Editor."""
+        return self.client.post(
+            url_for('users.login'),
+            follow_redirects=True,
+            data={
+                'email': 'edit@mypost.com',
+                'password': 'editors password'
+            },
+        )

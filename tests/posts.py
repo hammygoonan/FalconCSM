@@ -72,7 +72,7 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True,
                 data={
                     'post_id': 1,
-                    'user_id': 1,
+                    'user_id': 2,
                     'title': 'New Post',
                     'content': 'New content'
                 }
@@ -82,15 +82,31 @@ class PostsTestCase(BaseTestCase):
             # dates should have changed. Assume more than a microsecond has
             # passed
             self.assertNotEqual(post.created, post.modified)
+            self.assertIn(b'Post updated.', response.data)
             self.assertEqual('New content', post.content)
 
     def test_post_edit_page_with_editor(self):
         """Test Editor functionality when editing posts."""
-        # TODO check editor can edit
-        pass
-
-    def test_post_updated(self):
-        pass
+        with self.client:
+            self.editor_login()
+            response = self.client.post(
+                '/posts/edit',
+                follow_redirects=True,
+                data={
+                    'post_id': 1,
+                    'user_id': 1,
+                    'title': 'New content',
+                    'content': 'An editor edited my content'
+                }
+            )
+            post = Post.query.get(1)
+            self.assertEqual(response.status_code, 200)
+            # dates should have changed. Assume more than a microsecond has
+            # passed
+            self.assertNotEqual(post.created, post.modified)
+            self.assertIn(b'Post updated.', response.data)
+            self.assertEqual('New content', post.title)
+            self.assertEqual('An editor edited my content', post.content)
 
     def test_post_list_page(self):
         """Test page displays a list of posts."""
@@ -110,8 +126,10 @@ class PostsTestCase(BaseTestCase):
             self.assertNotIn(b'<td>New Post</td>', response.data)
 
     def test_post_add_page(self):
+        """Test new post can be created."""
         # Test that creator is either author or editor
         pass
 
     def test_post_delete(self):
+        """Test post can be deleted."""
         pass

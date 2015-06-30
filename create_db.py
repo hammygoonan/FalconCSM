@@ -19,8 +19,10 @@ post_content = """##First Post Header
 def create_db():
     """Create database for tests."""
     db.create_all()
-    user = User('test@example.com', 'password',
-                'John Henry', 'big_j')
+    admin_role = Role('Administrator')
+    editor_role = Role('Editor')
+    author_role = Role('Author')
+    user = User('test@example.com', 'password', 'John Henry', 'big_j')
     other_user = User('other@example.com', 'other password', 'Major Luddite',
                       'luddites')
     no_post_login = User('nopost@magoo.com', 'magoo password', 'Mr Magoo',
@@ -35,10 +37,12 @@ def create_db():
                       datetime.now(), 1, 1, other_user)
     tag = Taxonomy('New Tag', 2)
     category = Taxonomy('New Category', 1)
+    editor = User('edit@mypost.com', 'editors password', 'Editor', 'editor')
+    editor.roles.append(editor_role)
     db.session.add_all([
-        Role('Administrator'),
-        Role('Editor'),
-        Role('Author'),
+        admin_role,
+        editor_role,
+        author_role,
         user,
         post,
         second_post,
@@ -46,6 +50,7 @@ def create_db():
         category,
         other_user,
         other_post,
-        no_post_login
+        no_post_login,
+        editor
     ])
     db.session.commit()
