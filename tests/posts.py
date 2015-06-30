@@ -169,5 +169,30 @@ class PostsTestCase(BaseTestCase):
 
     def test_post_delete(self):
         """Test post can be deleted."""
-        self.login()
-        pass
+        with self.client:
+            self.login()
+            response = self.client.get(
+                'posts/delete/2',
+                follow_redirects=True
+            )
+            self.assertIn(b'Post deleted.', response.data)
+
+    def test_wong_user_cant_delete(self):
+        """Check that an unauthorised user can't delete."""
+        with self.client:
+            self.other_login()
+            response = self.client.get(
+                'posts/delete/2',
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 404)
+
+    def test_editor_can_delete(self):
+        """Test post can be deleted by an editor."""
+        with self.client:
+            self.login()
+            response = self.client.get(
+                'posts/delete/2',
+                follow_redirects=True
+            )
+            self.assertIn(b'Post deleted.', response.data)

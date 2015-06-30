@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """posts/views.py: Post views."""
 
-from flask import render_template, Blueprint, request, redirect, abort, flash
+from flask import render_template, Blueprint, request, redirect, abort, flash,\
+    url_for
 from falconcms import db
 from datetime import datetime
 from falconcms.models import Post
@@ -85,6 +86,12 @@ def post_add():
 
 @posts_blueprint.route('/posts/delete/<int:post_id>')
 @login_required
-def post_delete(id):
+def post_delete(post_id):
     """Delete Posts."""
-    pass
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if post.author_id != current_user.id and not current_user.is_editor():
+        abort(404)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted.')
+    return redirect(url_for('posts.post_list'))

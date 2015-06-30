@@ -26,7 +26,7 @@
                             <td>{{ post.created.strftime('%Y-%m-%d') }}</td>
                             <td>
                                 <a href="/posts/edit/{{ post.id }}">edit</a> |
-                                <a href="/posts/delete/{{ post.id }}">delete</a>
+                                <a href="/posts/delete/{{ post.id }}" onclick="if(!window.confirm('Are you sure you want to delete this post?')) return false;">delete</a>
                             </td>
                         </tr>
                     {% endfor %}
