@@ -68,3 +68,24 @@ class ModelTestCase(BaseTestCase):
                 self.assertTrue('New Category', taxonomy.name)
             elif taxonomy.tag_type == 2:
                 self.assertTrue('New Tag', taxonomy.name)
+
+    def test_can_get_option(self):
+        """Can read Options."""
+        option = models.Option.query.get(1)
+        self.assertEqual('site_url', option.option)
+        self.assertEqual('http://example.com', option.value)
+
+    def test_can_save_option(self):
+        """New Options can be saved."""
+        db.session.add(models.Option('new option', 'new value'))
+        db.session.commit()
+        option = models.Option.query.filter_by(value='new value').first()
+        self.assertEqual('new value', option.value)
+
+    def test_can_update_option(self):
+        """Options can be updated."""
+        option = models.Option.query.get(1)
+        option.value = 'http://httpbin.org'
+        db.session.commit()
+        option = models.Option.query.get(1)
+        self.assertEqual('http://httpbin.org', option.value)

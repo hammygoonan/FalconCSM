@@ -136,3 +136,18 @@ class Taxonomy(db.Model):
         """Initialise."""
         self.name = name
         self.tag_type = tag_type
+
+
+class Option(db.Model):
+
+    """Options model."""
+
+    __tablename__ = 'options'
+
+    id = db.Column(db.Integer, primary_key=True)
+    option = db.Column(db.Integer)
+    value = db.Column(db.Text)
+
+    def __init__(self, option, value):
+        self.option = option
+        self.value = value

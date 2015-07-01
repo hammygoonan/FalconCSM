@@ -5,7 +5,7 @@
 
 from falconcms import db
 from datetime import datetime
-from falconcms.models import User, Post, Taxonomy, Role
+from falconcms.models import User, Post, Taxonomy, Role, Option
 
 
 post_content = """##First Post Header
@@ -39,6 +39,9 @@ def create_db():
     category = Taxonomy('New Category', 1)
     editor = User('edit@mypost.com', 'editors password', 'Editor', 'editor')
     editor.roles.append(editor_role)
+
+    # options
+    site_name = Option('site_url', 'http://example.com')
     db.session.add_all([
         admin_role,
         editor_role,
@@ -51,6 +54,7 @@ def create_db():
         other_user,
         other_post,
         no_post_login,
-        editor
+        editor,
+        site_name
     ])
     db.session.commit()
