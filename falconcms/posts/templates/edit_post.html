@@ -20,6 +20,29 @@
                 <input type="text" id="title" name="title" value="{{ post.title }}" placeholder="Post Title" />
             </div>
         </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <select name="status" id="status">
+                    <option value="1"{% if post.status == 1 %} selected{% endif %}>Draft</option>
+                    <option value="2"{% if post.status == 1 %} selected{% endif %}>Published</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="checkbox" id="change-date" name="change-date" value="yes" /><label for="change-date">Edit publish date</label>
+            </div>
+            <div class="large-6 columns">
+                <label>Publish date
+                    <input type="text" id="date" name="date" placeholder="dd-mm-yyyy" value="{% if post.published %}{{ post.published.strftime('%d-%m-%Y') }}{% endif %}" />
+                </label>
+            </div>
+            <div class="large-6 columns">
+                <label>Publish time
+                    <input type="text" id="time" name="time" placeholder="hh:mm" value="{% if post.published %}{{ post.published.strftime('%H:%M') }}{% endif %}" />
+                </label>
+            </div>
+        </div>
         <div class="row collapse">
             <div class="large-6 columns">
                 <textarea name="content" id="content" placeholder="Enter your content here...">{{ post.content }}</textarea>
@@ -36,6 +59,7 @@
         <input type="hidden" name="user_id" value="{{ current_user.id }}" />
     </form>
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/Markdown.Converter.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

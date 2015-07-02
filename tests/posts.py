@@ -22,6 +22,8 @@ class PostsTestCase(BaseTestCase):
         self.assertIn(b'<li>first item</li>', response.data)
         self.assertIn(b'<a href="http://httpbin.com">a link</a>',
                       response.data)
+        self.assertNotIn(b'<h1>Future Post</h1>', response.data)
+        self.assertNotIn(b'<h1>Unpublished</h1>', response.data)
 
     def test_redirect_to_login_in_not_logged_in_on_post_edit_page(self):
         """Check that users are redirect to login page if not logged in."""
@@ -73,6 +75,7 @@ class PostsTestCase(BaseTestCase):
                 data={
                     'post_id': 1,
                     'user_id': 2,
+                    'status': 2,
                     'title': 'New Post',
                     'content': 'New content'
                 }
@@ -95,6 +98,7 @@ class PostsTestCase(BaseTestCase):
                 data={
                     'post_id': 1,
                     'user_id': 1,
+                    'status': 1,
                     'title': 'New content',
                     'content': 'An editor edited my content'
                 }
@@ -141,6 +145,7 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True,
                 data={
                     'user_id': 2,
+                    'status': 2,
                     'title': 'Added title',
                     'content': 'This is the content of an added post'
                 }
@@ -161,6 +166,7 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True,
                 data={
                     'user_id': 1,
+                    'status': 2,
                     'title': 'New content',
                     'content': 'An editor edited my content'
                 }
@@ -176,6 +182,8 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True
             )
             self.assertIn(b'Post deleted.', response.data)
+            post = Post.query.get(2)
+            self.assertEqual(3, post.status)
 
     def test_wong_user_cant_delete(self):
         """Check that an unauthorised user can't delete."""
@@ -196,3 +204,85 @@ class PostsTestCase(BaseTestCase):
                 follow_redirects=True
             )
             self.assertIn(b'Post deleted.', response.data)
+            post = Post.query.get(2)
+            self.assertEqual(3, post.status)
+
+    def test_deleted_posts_dont_appear_on_list_page(self):
+        """Test deleted posts aren't showing up anywhere."""
+        with self.client:
+            self.login()
+            post = Post.query.get(2)
+            self.client.get(
+                'posts/delete/2',
+                follow_redirects=True
+            )
+            response = self.client.get(
+                'posts'
+            )
+            self.assertNotIn(b'The Second Post', response.data)
+
+    def test_date_published(self):
+        """Test published data works."""
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/save',
+                follow_redirects=True,
+                data={
+                    'user_id': 2,
+                    'post_id': 2,
+                    'status': 2,
+                    'change-date': 'yes',
+                    'date': '10-12-2016',
+                    'time': '12:58',
+                    'title': 'Added title',
+                    'content': 'This is the content of an added post'
+                }
+            )
+            self.assertIn(b'Post updated.', response.data)
+            post = Post.query.get(2)
+            self.assertEqual('2016', post.published.strftime('%Y'))
+
+    def test_date_published_doesnt_change(self):
+        """Test published date doesn't change if checkbox isn't clicked."""
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/save',
+                follow_redirects=True,
+                data={
+                    'user_id': 2,
+                    'post_id': 2,
+                    'status': 2,
+                    'date': '10-12-2016',
+                    'time': '12:58',
+                    'title': 'Added title',
+                    'content': 'This is the content of an added post'
+                }
+            )
+            self.assertIn(b'Post updated.', response.data)
+            post = Post.query.get(2)
+            self.assertNotEqual('2016', post.published.strftime('%Y'))
+
+    def test_error_if_published_date_format_incorrect(self):
+        """Test published date doesn't change if date format is incorrect."""
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/save',
+                follow_redirects=True,
+                data={
+                    'user_id': 2,
+                    'post_id': 2,
+                    'status': 2,
+                    'change-date': 'yes',
+                    'date': '10/12/2016',
+                    'time': '12:58',
+                    'title': 'Added title',
+                    'content': 'This is the content of an added post'
+                }
+            )
+            self.assertIn(b'The date and/or time fields were not property'
+                          b' formatted', response.data)
+            post = Post.query.get(2)
+            self.assertNotEqual('2016', post.published.strftime('%Y'))

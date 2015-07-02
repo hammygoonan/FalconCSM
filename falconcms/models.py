@@ -30,6 +30,7 @@ class Post(db.Model):
     content = db.Column(db.Text)
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
+    published = db.Column(db.DateTime)
     status = db.Column(db.Integer)
     post_type = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -47,13 +48,14 @@ class Post(db.Model):
     TYPE_POST = 1
     TYPE_PAGE = 2
 
-    def __init__(self, title, content, created, modified, status, post_type,
-                 author):
+    def __init__(self, title, content, created, modified, published, status,
+                 post_type, author):
         """Initialise model."""
         self.title = title
         self.content = content
         self.created = created
         self.modified = modified
+        self.published = published
         self.status = status
         self.post_type = post_type
         self.author = author
