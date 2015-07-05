@@ -4,6 +4,7 @@
 
 from falconcms import db
 from falconcms import bcrypt
+import re
 
 
 taxonomy = db.Table(
@@ -28,6 +29,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.Text)
+    slug = db.Column(db.String, unique=True)
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
     published = db.Column(db.DateTime)
@@ -48,17 +50,38 @@ class Post(db.Model):
     TYPE_POST = 1
     TYPE_PAGE = 2
 
-    def __init__(self, title, content, created, modified, published, status,
-                 post_type, author):
+    def __init__(self, title, content, slug, created, modified, published,
+                 status, post_type, author):
         """Initialise model."""
         self.title = title
         self.content = content
+        if slug is None:
+            # remove any non-word character
+            self.slug = re.sub("[^a-zA-Z0-9- ]", "", title.strip())
+            self.slug = self.slug.lower().replace(' ', '-')
+        else:
+            self.slug = re.sub("[^a-zA-Z0-9- ]", "", slug.strip())
+            self.slug = self.slug.lower().replace(' ', '-')
+        self.check_slug(1)
         self.created = created
         self.modified = modified
         self.published = published
         self.status = status
         self.post_type = post_type
         self.author = author
+
+    def check_slug(self, count):
+        """Check to make sure slug is unique. Append integer if it isn't."""
+        post = Post.query.filter(Post.slug == self.slug, Post.id != self.id)\
+            .first()
+        if post:
+            if count > 1:
+                # if it already has a number appended, trim it first
+                self.slug = self.slug.split('-')
+                self.slug = '-'.join(self.slug[:-1])
+            count += 1
+            self.slug = '{}-{}'.format(self.slug, count)
+            self.check_slug(count)
 
 
 class User(db.Model):
@@ -151,5 +174,6 @@ class Option(db.Model):
     value = db.Column(db.Text)
 
     def __init__(self, option, value):
+        """Initialise."""
         self.option = option
         self.value = value

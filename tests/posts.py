@@ -25,6 +25,22 @@ class PostsTestCase(BaseTestCase):
         self.assertNotIn(b'<h1>Future Post</h1>', response.data)
         self.assertNotIn(b'<h1>Unpublished</h1>', response.data)
 
+    def test_single_post(self):
+        """Test posts are displayed on single post page."""
+        response = self.client.get(
+            '/new-post', content_type='html/text',
+            follow_redirects=True
+        )
+        self.assertIn(b'<h1>New Post</h1>', response.data)
+
+    def test_404_if_no_single_post(self):
+        """Test 404 page displayed if slug is wrong."""
+        response = self.client.get(
+            '/this-slug-is-wrong', content_type='html/text',
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 404)
+
     def test_redirect_to_login_in_not_logged_in_on_post_edit_page(self):
         """Check that users are redirect to login page if not logged in."""
         with self.client:
@@ -158,11 +174,11 @@ class PostsTestCase(BaseTestCase):
         self.assertEqual(posts[-1].created, posts[-1].modified)
 
     def test_cant_create_post_for_another_user(self):
-        """Test that a 404 is thrown is wrong user tries to create post."""
+        """Test that a 404 is thrown if wrong user tries to create post."""
         with self.client:
             self.login()
             response = self.client.post(
-                '/posts/edit',
+                '/posts/save',
                 follow_redirects=True,
                 data={
                     'user_id': 1,

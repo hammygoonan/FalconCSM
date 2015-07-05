@@ -5,6 +5,7 @@
 
 from tests.base import BaseTestCase
 from falconcms import models, db
+from datetime import datetime
 
 
 class ModelTestCase(BaseTestCase):
@@ -68,6 +69,38 @@ class ModelTestCase(BaseTestCase):
                 self.assertTrue('New Category', taxonomy.name)
             elif taxonomy.tag_type == 2:
                 self.assertTrue('New Tag', taxonomy.name)
+
+    def test_post_slug_is_unique(self):
+        """Test that post slug is unique."""
+        user = models.User.query.get(1)
+        post = models.Post('New Post', "some dummy content", None,
+                           datetime.now(), datetime.now(), datetime.now(), 2,
+                           1, user)
+        db.session.add(post)
+        db.session.commit()
+        self.assertNotEqual('new-post', post.slug)
+        self.assertEqual('new-post-2', post.slug)
+
+        # try another for good measuer
+        post = models.Post('New Post', "some more dummy content", None,
+                           datetime.now(), datetime.now(), datetime.now(), 2,
+                           1, user)
+        db.session.add(post)
+        db.session.commit()
+        self.assertNotEqual('new-post', post.slug)
+        self.assertNotEqual('new-post-2', post.slug)
+        self.assertEqual('new-post-3', post.slug)
+
+    def test_slugs_only_contain_words(self):
+        """Test that incorrect characters are stripped from slug."""
+        user = models.User.query.get(1)
+        post = models.Post('New Post', "some dummy content",
+                           "%this^is7a&*mis 98   ",
+                           datetime.now(), datetime.now(), datetime.now(), 2,
+                           1, user)
+        db.session.add(post)
+        db.session.commit()
+        self.assertEqual('thisis7amis-98', post.slug)
 
     def test_can_get_option(self):
         """Can read Options."""

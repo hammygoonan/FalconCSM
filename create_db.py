@@ -27,19 +27,19 @@ def create_db():
                       'luddites')
     no_post_login = User('nopost@magoo.com', 'magoo password', 'Mr Magoo',
                          'magoo')
-    post = Post('New Post', post_content, datetime.now(), datetime.now(),
+    post = Post('New Post', post_content, None, datetime.now(), datetime.now(),
                 datetime.now(), 2, 1, user)
     second_post = Post('The Second Post', 'this is the content for the '
-                       'second post', datetime.now(), datetime.now(),
+                       'second post', None, datetime.now(), datetime.now(),
                        datetime.now(), 1, 1, user)
     other_post = Post('The Other Second Post', 'this is the content for the '
-                      'other post', datetime.now(), datetime.now(),
+                      'other post', None, datetime.now(), datetime.now(),
                       datetime.now(), 2, 1, other_user)
     plus_five_hours = datetime.now() + timedelta(hours=5)
     publish_in_future = Post('Future Post', 'This post will be published in'
-                             'the future', datetime.now(), datetime.now(),
-                             plus_five_hours, 2, 1, other_user)
-    unpublished = Post('Unpublished', 'This post is still a draft',
+                             'the future', None, datetime.now(),
+                             datetime.now(), plus_five_hours, 2, 1, other_user)
+    unpublished = Post('Unpublished', 'This post is still a draft', None,
                        datetime.now(), datetime.now(), datetime.now(), 1, 1,
                        other_user)
     tag = Taxonomy('New Tag', 2)

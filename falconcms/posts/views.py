@@ -26,6 +26,15 @@ def home():
     return render_template('index.html', posts=posts)
 
 
+@posts_blueprint.route('/<path:post_slug>')
+def single_post(post_slug):
+    """Single post page."""
+    post = Post.query.filter(
+        Post.slug == post_slug, Post.status == 2
+    ).first_or_404()
+    return render_template('post.html', post=post)
+
+
 @posts_blueprint.route('/posts/edit/<int:post_id>', methods=['GET'])
 @login_required
 def post_edit(post_id=None):
@@ -76,6 +85,7 @@ def post_save():
         post.content = request.form.get('content')
         post.modified = datetime.now()
         post.status = request.form.get('status')
+        post.slug = request.form.get('slug')
         if published:
             post.published = published
         message = 'Post updated.'
@@ -83,10 +93,12 @@ def post_save():
     else:
         title = request.form.get('title')
         content = request.form.get('content')
+        slug = request.form.get('slug')
         now = datetime.now()
         if published:
             post.published = published
-        post = Post(title, content, now, now, published, 1, 1, current_user)
+        post = Post(title, content, slug, now, now, published, 1, 1,
+                    current_user)
         message = 'Post created.'
     db.session.add(post)
     db.session.commit()
