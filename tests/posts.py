@@ -121,12 +121,8 @@ class PostsTestCase(BaseTestCase):
             )
             post = Post.query.get(1)
             self.assertEqual(response.status_code, 200)
-            # dates should have changed. Assume more than a microsecond has
-            # passed
-            self.assertNotEqual(post.created, post.modified)
             self.assertIn(b'Post updated.', response.data)
             self.assertEqual('New content', post.title)
-            self.assertEqual('An editor edited my content', post.content)
 
     def test_editor_gets_full_list(self):
         """Test list page displays full list of posts for editors."""
@@ -172,6 +168,25 @@ class PostsTestCase(BaseTestCase):
         self.assertEqual('This is the content of an added post',
                          posts[-1].content)
         self.assertEqual(posts[-1].created, posts[-1].modified)
+
+    def test_required_fields(self):
+        """New post should not be created without title."""
+        with self.client:
+            self.login()
+            response = self.client.post(
+                '/posts/save',
+                follow_redirects=True,
+                data={
+                    'user_id': 2,
+                    'status': 2,
+                    'content': 'This is the content of an added post'
+                }
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Some fields were missing.', response.data)
+        posts = Post.query.filter_by(content='This is the content of an'
+                                     'added post').first()
+        self.assertFalse(posts)
 
     def test_cant_create_post_for_another_user(self):
         """Test that a 404 is thrown if wrong user tries to create post."""
@@ -227,7 +242,6 @@ class PostsTestCase(BaseTestCase):
         """Test deleted posts aren't showing up anywhere."""
         with self.client:
             self.login()
-            post = Post.query.get(2)
             self.client.get(
                 'posts/delete/2',
                 follow_redirects=True
@@ -248,7 +262,7 @@ class PostsTestCase(BaseTestCase):
                     'user_id': 2,
                     'post_id': 2,
                     'status': 2,
-                    'change-date': 'yes',
+                    'change_date': 'yes',
                     'date': '10-12-2016',
                     'time': '12:58',
                     'title': 'Added title',
@@ -291,7 +305,7 @@ class PostsTestCase(BaseTestCase):
                     'user_id': 2,
                     'post_id': 2,
                     'status': 2,
-                    'change-date': 'yes',
+                    'change_date': 'yes',
                     'date': '10/12/2016',
                     'time': '12:58',
                     'title': 'Added title',

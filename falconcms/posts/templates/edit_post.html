@@ -14,46 +14,44 @@
             </div>
         </div>
     {% endfor %}
-    <form method="post" action="{{ url_for('posts.post_save') }}">
+    <form method="post" role="form" action="{{ url_for('posts.post_save') }}">
+        {{ form.hidden_tag() }}
         <div class="row">
             <div class="large-12 columns">
-                <input type="text" id="title" name="title" value="{{ post.title }}" placeholder="Post Title" />
-            </div>
-        </div>
-        <div class="row collapse">
-            <div class="large-4 small-6 columns">
-                <span class="prefix">http://flaconcsm.com/</span>
-            </div>
-            <div class="large-8 small-6 columns">
-                <input type="text" id="slug" name="slug" value="{{ post.slug }}" placeholder="Slug" />
+                {{ form.title(placeholder="Post Title") }}
             </div>
         </div>
         <div class="row">
             <div class="large-12 columns">
-                <select name="status" id="status">
-                    <option value="1"{% if post.status == 1 %} selected{% endif %}>Draft</option>
-                    <option value="2"{% if post.status == 1 %} selected{% endif %}>Published</option>
-                </select>
+                <div class="row collapse">
+                    <div class="large-4 small-6 columns">
+                        <span class="prefix">http://flaconcsm.com/</span>
+                    </div>
+                    <div class="large-8 small-6 columns">
+                        {{ form.slug(placeholder="Slug") }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="large-12 columns">
-                <input type="checkbox" id="change-date" name="change-date" value="yes" /><label for="change-date">Edit publish date</label>
+                {{ form.status }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                {{ form.change_date }}{{ form.change_date.label }}
             </div>
             <div class="large-6 columns">
-                <label>Publish date
-                    <input type="text" id="date" name="date" placeholder="dd-mm-yyyy" value="{% if post.published %}{{ post.published.strftime('%d-%m-%Y') }}{% endif %}" />
-                </label>
+                {{ form.date(placeholder="dd-mm-yyyy") }}
             </div>
             <div class="large-6 columns">
-                <label>Publish time
-                    <input type="text" id="time" name="time" placeholder="hh:mm" value="{% if post.published %}{{ post.published.strftime('%H:%M') }}{% endif %}" />
-                </label>
+                {{ form.time(placeholder="hh:mm") }}
             </div>
         </div>
         <div class="row collapse">
             <div class="large-6 columns">
-                <textarea name="content" id="content" placeholder="Enter your content here...">{{ post.content }}</textarea>
+                {{ form.content(placeholder="Enter your content here...") }}
             </div>
             <div class="large-6 columns" id="preview">
             </div>
@@ -63,8 +61,6 @@
                 <button type="submit" name="submit" class="button expand radius">Submit</button>
             </div>
         </div>
-        <input type="hidden" name="post_id" value="{{ post.id }}" />
-        <input type="hidden" name="user_id" value="{{ current_user.id }}" />
     </form>
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>

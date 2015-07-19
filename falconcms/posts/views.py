@@ -9,6 +9,7 @@ from datetime import datetime
 import re
 from falconcms.models import Post
 from flask.ext.login import login_required, current_user
+from .forms import EditForm
 
 posts_blueprint = Blueprint(
     'posts', __name__,
@@ -42,37 +43,46 @@ def post_edit(post_id=None):
     post = Post.query.filter_by(id=post_id).first_or_404()
     if post.author_id != current_user.id and not current_user.is_editor():
         abort(404)
-    return render_template('edit_post.html', post=post)
+    post.time = post.published.strftime('%H:%M')
+    post.date = post.published.strftime('%d-%m-%Y')
+    post.post_id = post.id
+    post.user_id = current_user.id
+    form = EditForm(data=post.__dict__)
+    return render_template('edit_post.html', form=form)
 
 
 @posts_blueprint.route('/posts/save', methods=['POST'])
 @login_required
 def post_save():
     """Update post."""
-    user_id = request.form.get('user_id')
-    if current_user.id != int(user_id) or not user_id:
-        abort(404)
-
+    form = EditForm()
     post_id = request.form.get('post_id')
-    change_date = request.form.get('change-date')
+    change_date = request.form.get('change_date')
     published = None
     date = request.form.get('date')
     time = request.form.get('time')
-    if change_date:
-        if(
-            re.search('[0-9]{2}-[0-9]{2}-[0-9]{4}', date) and
-            re.search('[0-9]{2}:[0-9]{2}', time)
-        ):
-            date = [int(x) for x in date.split('-')]
-            time = [int(x) for x in time.split(':')]
-            published = datetime(date[2], date[1], date[0], time[0], time[1])
+    user_id = request.form.get('user_id')
+    if not form.validate_on_submit():
+        flash('Some fields were missing.')
+        if post_id:
+            return redirect('/posts/edit/' + str(post_id))
         else:
+            form = EditForm()
+            return render_template('edit_post.html', post=None, form=form)
+
+    if current_user.id != int(user_id) or not user_id:
+        abort(404)
+
+    if change_date:
+        published = validate_published(date, time)
+        if not published:
             # if dates are invalid
             flash('The date and/or time fields were not property formatted.')
             if post_id:
                 return redirect('/posts/edit/' + str(post_id))
             else:
-                return render_template('edit_post.html', post=None)
+                form = EditForm()
+                return render_template('edit_post.html', post=None, form=form)
     # if it's an update
     if post_id:
         post = Post.query.get(post_id)
@@ -95,8 +105,8 @@ def post_save():
         content = request.form.get('content')
         slug = request.form.get('slug')
         now = datetime.now()
-        if published:
-            post.published = published
+        if not published:
+            published = now
         post = Post(title, content, slug, now, now, published, 1, 1,
                     current_user)
         message = 'Post created.'
@@ -104,6 +114,20 @@ def post_save():
     db.session.commit()
     flash(message)
     return redirect('/posts/edit/' + str(post.id))
+
+
+def validate_published(date, time):
+    """Validate date and time fields."""
+    if(
+        re.search('[0-9]{2}-[0-9]{2}-[0-9]{4}', date) and
+        re.search('[0-9]{2}:[0-9]{2}', time)
+    ):
+        date = [int(x) for x in date.split('-')]
+        time = [int(x) for x in time.split(':')]
+        return datetime(date[2], date[1], date[0], time[0], time[1])
+    else:
+        # if dates are invalid
+        False
 
 
 @posts_blueprint.route('/posts')
