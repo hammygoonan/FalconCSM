@@ -8,6 +8,7 @@ from flask.ext.login import login_user, login_required, logout_user,\
     current_user
 from falconcms import db, bcrypt, is_email
 from falconcms.models import User
+from .forms import LoginForm, EditUserForm
 
 users_blueprint = Blueprint(
     'users', __name__,
@@ -18,7 +19,10 @@ users_blueprint = Blueprint(
 @users_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     """Login route."""
-    if request.method == "POST":
+    form = LoginForm()
+    if request.method == "GET":
+        return render_template('login.html', form=form)
+    if form.validate_on_submit():
         user = User.query.filter_by(email=request.form['email']).first()
         if user is not None and bcrypt.check_password_hash(
             user.password, request.form['password']
@@ -26,11 +30,11 @@ def login():
             login_user(user)
             flash("You are now logged in.")
             return redirect(url_for('posts.post_list'))
-
         else:
             flash('Invalid username or password.')
-
-    return render_template('login.html')
+    else:
+        flash('Invalid form data.')
+    return render_template('login.html', form=form)
 
 
 @users_blueprint.route('/logout')
@@ -46,11 +50,12 @@ def logout():
 @login_required
 def edit_user():
     """Edit user route."""
-    if request.method == "POST":
+    form = EditUserForm(data=current_user.__dict__)
+    if request.method == "GET":
+        return render_template('edit_user.html', form=form)
+
+    if form.validate_on_submit():
         email = request.form.get('email')
-        if not email or not is_email(email):
-            flash('Please enter a valid email address.')
-            return render_template('edit_user.html', user=current_user)
         user = User.query.filter_by(email=email).first()
         # if email is already taken
         if user and user.id != current_user.id:
@@ -59,12 +64,21 @@ def edit_user():
             user = User.query.get(current_user.id)
             # update password if changed
             if request.form['password'] != '':
-                user.password = bcrypt.generate_password_hash(
-                    request.form['password']
-                )
+                if(
+                    request.form['password'] !=
+                    request.form['confirm_password']
+                ):
+                    flash('Passwords did not match.')
+                else:
+                    user.password = bcrypt.generate_password_hash(
+                        request.form['password']
+                    )
             # update email if changed
             if current_user.email != request.form['email']:
                 user.email = request.form['email']
             db.session.commit()
             flash('Your details have been updated')
-    return render_template('edit_user.html', user=current_user)
+    else:
+        flash('Your details have not been updated. There were errors in the '
+              'form')
+    return render_template('edit_user.html', form=form)

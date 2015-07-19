@@ -12,10 +12,11 @@
 <form id="login-form" method="post" action="{{ url_for('users.login') }}">
 	<div class="row">
 	    <div class="large-12 columns">
-			<label for="email">Email:</label>
-			<input class="form-control" id="email" name="email" type="text" placeholder="Your Email Address" />
-			<label for="password">Password:</label>
-			<input class="form-control" id="password" name="password" type="password" placeholder="Password" />
+			{{ form.csrf_token }}
+			{{ form.email.label }}
+			{{ form.email(placeholder="Your Email Address") }}
+			{{ form.password.label }}
+			{{ form.password(placeholder="Password") }}
 		</div>
 	</div>
 	<div class="row">

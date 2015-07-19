@@ -67,13 +67,14 @@ class UsersTestCase(BaseTestCase):
         """Test the user can update email."""
         with self.client:
             self.login()
-            self.assertTrue(current_user.email == 'test@example.com')
+            self.assertEqual(current_user.email, 'test@example.com')
             # update email
             response = self.client.post(
                 '/users/edit',
                 data={
                     'email': 'new@example.com',
-                    'password': ''
+                    'password': '',
+                    'confirm_password': ''
                 },
                 follow_redirects=True
             )
@@ -99,7 +100,8 @@ class UsersTestCase(BaseTestCase):
                 '/users/edit',
                 data={
                     'email': 'test@example.com',
-                    'password': 'new password'
+                    'password': 'new password',
+                    'confirm_password': 'new password'
                 },
                 follow_redirects=True
             )
@@ -148,8 +150,7 @@ class UsersTestCase(BaseTestCase):
                 follow_redirects=True
             )
             # display flash message
-            self.assertIn(b'Please enter a valid email address.',
-                          response.data)
+            self.assertIn(b'This field is required.', response.data)
             # invalid email address
             response = self.client.post(
                 '/users/edit',
@@ -160,17 +161,18 @@ class UsersTestCase(BaseTestCase):
                 follow_redirects=True
             )
             # display flash message
-            self.assertIn(b'Please enter a valid email address.',
+            self.assertIn(b'Invalid email address.',
                           response.data)
             # change email but not password
             response = self.client.post(
                 '/users/edit',
                 data={
                     'email': '',
-                    'password': 'new password'
+                    'password': 'new password',
+                    'confirm_password': 'new password'
                 },
                 follow_redirects=True
             )
             # display flash message
-            self.assertIn(b'Please enter a valid email address.',
+            self.assertIn(b'This field is required.',
                           response.data)

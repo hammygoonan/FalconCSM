@@ -1,19 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Edit your details:</h1>
-{% for message in get_flashed_messages() %}
-    <p class="has-error">{{ message }}</p>
-{% endfor %}
+<div class="row">
+	<div class="large-12 columns">
+		<h1>Edit your details:</h1>
+		{% for message in get_flashed_messages() %}
+			<p class="has-error">{{ message }}</p>
+		{% endfor %}
+	</div>
+<div>
 <form id="login-form" method="post" action="{{ url_for('users.edit_user') }}">
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input class="form-control" id="email" name="email" value="{{ user.email }}" type="text" placeholder="Your Email Address" />
-    </div>
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input class="form-control" id="password" name="password" type="password" placeholder="Password" />
-    </div>
-    <button type="submit" class="form-control btn btn-warning">Submit</button>
+	<div class="row">
+	    <div class="large-12 columns">
+			{{ form.csrf_token }}
+			{{ form.email.label }}
+			{{ form.email(placeholder="Your Email Address") }}
+            {% if form.email.errors %}
+				<span class="error">
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+				</span>
+            {% endif %}
+			{{ form.password.label }}
+			{{ form.password(placeholder="Password") }}
+            {{ form.confirm_password.label }}
+			{{ form.confirm_password(placeholder="Conform Password") }}
+		</div>
+	</div>
+	<div class="row">
+	    <div class="large-12 columns">
+			<button class="button" type="submit">Submit</button>
+		</div>
+	</div>
 </form>
 {% endblock %}
